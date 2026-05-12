@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-green: #0A422D; /* Exact match for Logo Dark Green */
+  --color-brand-green-light: #155E43;
+  --color-brand-yellow: #C99733; /* Exact match for Logo Gold */
+  --color-brand-yellow-light: #E5A91A;
+  --color-brand-cream: #FDFBF7; /* Exact match for Logo Cream Background */
+  --color-brand-cream-dark: #F3EFE6;
+  --color-brand-dark: #121512;
+  --color-brand-gray: #4B5563;
+  --color-brand-light-gray: #9CA3AF;
+  
+  --font-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: var(--font-serif), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-brand-cream text-brand-dark selection:bg-brand-green/10 selection:text-brand-green;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 450;
+    line-height: 1.6;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image: 
+      radial-gradient(circle at 2px 2px, rgba(10, 66, 45, 0.03) 1px, transparent 0);
+    background-size: 32px 32px;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+}
+
+.glass-panel {
+  background: rgba(253, 251, 247, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(10, 66, 45, 0.1);
+}
+
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(to right, var(--color-brand-green), var(--color-brand-yellow));
+}
+
+/* Custom Cursor Overlay */
+.custom-cursor {
+  width: 20px;
+  height: 20px;
+  background: var(--color-brand-yellow);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transition: transform 0.1s ease;
+}
+
+/* Filmic Grain Overlay */
+.grain-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.04;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+/* Hide scrollbar for clean look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+:active, :focus {
+  outline: none !important;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-brand-cream-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-green);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-green-light);
+}

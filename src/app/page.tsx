@@ -1,13 +1,29 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { ArrowRight, ShieldCheck, TrendingUp, Sprout, Handshake, Award, CheckCircle2, Globe, Users2, Wheat, Play, ArrowUpRight } from 'lucide-react';
+import { 
+  ArrowRight, ShieldCheck, TrendingUp, Sprout, Handshake, 
+  Award, CheckCircle2, Globe, Users2, Wheat, Play, 
+  ArrowUpRight, Truck, BarChart3, Search, Settings, 
+  Zap, Database, BarChart, ShoppingCart, Tag, Mail
+} from 'lucide-react';
 import FadeIn from '@/components/animations/FadeIn';
 import Counter from '@/components/animations/Counter';
 import HeroCarousel from '@/components/sections/HeroCarousel';
 import Magnetic from '@/components/animations/Magnetic';
+
+const IconMap: { [key: string]: any } = {
+  Handshake, Award, TrendingUp, ShieldCheck, Sprout, Globe, 
+  Wheat, Users2, Truck, BarChart3, Search, Settings, 
+  Zap, Database, BarChart, ShoppingCart, Tag, Mail
+};
+
+function DynamicIcon({ name, size = 32, className = "" }: { name: string, size?: number, className?: string }) {
+  const IconComponent = IconMap[name] || Handshake;
+  return <IconComponent size={size} className={className} />;
+}
 
 function ParallaxImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
   const ref = useRef(null);
@@ -33,6 +49,112 @@ function ParallaxImage({ src, alt, className }: { src: string; alt: string; clas
 export default function Home() {
   const introRef = useRef(null);
   const isIntroInView = useInView(introRef, { once: true, margin: "-100px" });
+  
+  const [services, setServices] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [servicesRes, productsRes] = await Promise.all([
+          fetch('/api/admin/services'),
+          fetch('/api/admin/products')
+        ]);
+        
+        const servicesData = await servicesRes.json();
+        const productsData = await productsRes.json();
+        
+        if (Array.isArray(servicesData)) setServices(servicesData);
+        if (Array.isArray(productsData)) setProducts(productsData);
+      } catch (err) {
+        console.error('Failed to fetch home data:', err);
+      }
+    }
+    fetchData();
+  }, []);
+
+  const groupedProducts = products.reduce((acc: any, product: any) => {
+    if (!acc[product.category]) {
+      acc[product.category] = {
+        category: product.category,
+        items: [],
+        img: product.image,
+        icon: product.category === 'Oilseeds' ? 'Sprout' : 
+              product.category === 'Grains' ? 'Wheat' :
+              product.category === 'Pulses' ? 'Users2' : 'Award'
+      };
+    }
+    acc[product.category].items.push(product.title);
+    return acc;
+  }, {});
+
+  const displayProducts = Object.values(groupedProducts).length > 0 
+    ? Object.values(groupedProducts) 
+    : [
+        { 
+          category: "Oilseeds", 
+          items: ["Peanut / Mungfali", "Soyabean", "Arandi (Castor)"], 
+          icon: "Sprout",
+          img: "/images/hero-bg.jpg"
+        },
+        { 
+          category: "Grains", 
+          items: ["Premium Wheat"], 
+          icon: "Wheat",
+          img: "/images/products-bg.jpg"
+        },
+        { 
+          category: "Pulses", 
+          items: ["Chickpeas (Chana)", "Green Gram (Moong)", "Black Gram (Urad)"], 
+          icon: "Users2",
+          img: "/images/pulses-bg.jpg"
+        },
+        { 
+          category: "Bio-Coal", 
+          items: ["Groundnut Shell", "Coal Products"], 
+          icon: "Award",
+          img: "/images/products-bg.jpg"
+        }
+      ];
+
+  const displayServices = services.length > 0 ? services : [
+    { 
+      title: "Auctioning & Brokerage", 
+      description: "Facilitating fair and transparent auctions between farmers and national buyers at competitive rates.",
+      benefits: ["Real-time bidding", "Fair price discovery", "Bulk buyer access"],
+      iconName: "Handshake"
+    },
+    { 
+      title: "Quality Grading", 
+      description: "Expert moisture testing and quality grading to ensure premium market value for your produce.",
+      benefits: ["Moisture analysis", "Impurity sorting", "Grade certification"],
+      iconName: "Award"
+    },
+    { 
+      title: "Market Intelligence", 
+      description: "Real-time price tracking and mandi updates across Gujarat for informed trading decisions.",
+      benefits: ["Price forecasting", "Market trends", "Volume reports"],
+      iconName: "TrendingUp"
+    },
+    { 
+      title: "Financial Settlements", 
+      description: "Prompt and transparent payment systems for farmers and seamless commercial billing solutions.",
+      benefits: ["Same-day payment", "Digital invoicing", "Tax compliance"],
+      iconName: "ShieldCheck"
+    },
+    { 
+      title: "Bulk Procurement", 
+      description: "Direct farm-to-industry supply chain management for all major agri commodities.",
+      benefits: ["Direct sourcing", "Contract farming", "SOP compliance"],
+      iconName: "Sprout"
+    },
+    { 
+      title: "Logistics Support", 
+      description: "Handling end-to-end transport and temporary warehousing in APMC yards for bulk lots.",
+      benefits: ["Fleet management", "Safe storage", "Inventory tracking"],
+      iconName: "Globe"
+    }
+  ];
 
   return (
     <div className="overflow-hidden">
@@ -96,44 +218,7 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {[
-              { 
-                title: "Auctioning & Brokerage", 
-                desc: "Facilitating fair and transparent auctions between farmers and national buyers at competitive rates.",
-                features: ["Real-time bidding", "Fair price discovery", "Bulk buyer access"],
-                icon: <Handshake size={32}/>
-              },
-              { 
-                title: "Quality Grading", 
-                desc: "Expert moisture testing and quality grading to ensure premium market value for your produce.",
-                features: ["Moisture analysis", "Impurity sorting", "Grade certification"],
-                icon: <Award size={32}/>
-              },
-              { 
-                title: "Market Intelligence", 
-                desc: "Real-time price tracking and mandi updates across Gujarat for informed trading decisions.",
-                features: ["Price forecasting", "Market trends", "Volume reports"],
-                icon: <TrendingUp size={32}/>
-              },
-              { 
-                title: "Financial Settlements", 
-                desc: "Prompt and transparent payment systems for farmers and seamless commercial billing solutions.",
-                features: ["Same-day payment", "Digital invoicing", "Tax compliance"],
-                icon: <ShieldCheck size={32}/>
-              },
-              { 
-                title: "Bulk Procurement", 
-                desc: "Direct farm-to-industry supply chain management for all major agri commodities.",
-                features: ["Direct sourcing", "Contract farming", "SOP compliance"],
-                icon: <Sprout size={32}/>
-              },
-              { 
-                title: "Logistics Support", 
-                desc: "Handling end-to-end transport and temporary warehousing in APMC yards for bulk lots.",
-                features: ["Fleet management", "Safe storage", "Inventory tracking"],
-                icon: <Globe size={32}/>
-              }
-            ].map((service, i) => (
+            {displayServices.map((service, i) => (
               <FadeIn key={i} delay={i * 0.05} direction="up">
                 <div className="group relative h-[450px] rounded-[1rem] bg-brand-cream border-b-4 border-brand-cream-dark hover:border-brand-green transition-all duration-500 overflow-hidden shadow-sm hover:shadow-2xl p-12">
                   {/* Background Number */}
@@ -143,7 +228,7 @@ export default function Home() {
 
                   <div className="relative z-10 h-full flex flex-col">
                     <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-brand-green mb-10 group-hover:bg-brand-green group-hover:text-white transition-all duration-500">
-                      {service.icon}
+                      <DynamicIcon name={service.iconName} size={32} />
                     </div>
                     
                     <h3 className="text-3xl font-serif font-semibold text-brand-dark mb-6 group-hover:text-brand-green transition-colors duration-500">
@@ -151,11 +236,11 @@ export default function Home() {
                     </h3>
                     
                     <p className="text-brand-gray text-base leading-relaxed font-medium mb-8">
-                      {service.desc}
+                      {service.description}
                     </p>
 
                     <div className="mt-auto flex flex-wrap gap-x-6 gap-y-3">
-                      {service.features.map((f, j) => (
+                      {(service.benefits || service.features || []).slice(0, 3).map((f: string, j: number) => (
                         <div key={j} className="flex items-center gap-2 text-xs font-bold text-brand-dark/40 group-hover:text-brand-dark transition-colors">
                           <div className="w-1 h-1 rounded-full bg-brand-yellow"></div>
                           {f}
@@ -264,32 +349,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-            {[
-              { 
-                category: "Oilseeds", 
-                items: ["Peanut / Mungfali", "Soyabean", "Arandi (Castor)"], 
-                icon: <Sprout className="text-brand-yellow" size={40}/>,
-                img: "/images/hero-bg.jpg"
-              },
-              { 
-                category: "Grains", 
-                items: ["Premium Wheat"], 
-                icon: <Wheat className="text-brand-yellow" size={40}/>,
-                img: "/images/products-bg.jpg"
-              },
-              { 
-                category: "Pulses", 
-                items: ["Chickpeas (Chana)", "Green Gram (Moong)", "Black Gram (Urad)"], 
-                icon: <Users2 className="text-brand-yellow" size={40}/>,
-                img: "/images/pulses-bg.jpg"
-              },
-              { 
-                category: "Bio-Coal", 
-                items: ["Groundnut Shell", "Coal Products"], 
-                icon: <Award className="text-brand-yellow" size={40}/>,
-                img: "/images/products-bg.jpg"
-              }
-            ].map((cat, i) => (
+            {(displayProducts as any[]).map((cat, i) => (
               <FadeIn key={i} delay={i * 0.1} direction="up">
                 <div className="group relative h-[550px] rounded-[1.5rem] overflow-hidden bg-brand-green/20 border border-white/5 hover:border-brand-yellow/30 transition-all duration-700 shadow-2xl">
                   {/* Background Image Layer */}
@@ -301,13 +361,13 @@ export default function Home() {
                   {/* Content Layer */}
                   <div className="relative z-10 p-10 h-full flex flex-col">
                     <div className="mb-10 transform group-hover:-translate-y-2 transition-transform duration-500">
-                      {cat.icon}
+                      <DynamicIcon name={cat.icon as string} className="text-brand-yellow" size={40} />
                     </div>
                     
                     <h3 className="text-4xl font-serif font-semibold text-white mb-8 leading-tight tracking-tight">{cat.category}</h3>
                     
                     <ul className="space-y-4 mb-10">
-                      {cat.items.map((item, j) => (
+                      {(cat.items as string[]).slice(0, 3).map((item, j) => (
                         <li key={j} className="flex items-center gap-4 text-white/60 text-lg font-medium group-hover:text-white transition-colors">
                           <div className="w-2 h-2 rounded-full bg-brand-yellow/50 group-hover:bg-brand-yellow transition-colors"></div>
                           {item}

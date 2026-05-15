@@ -10,7 +10,8 @@ import {
   ArrowUpRight,
   Clock,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Play
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -20,18 +21,20 @@ export default function AdminDashboard() {
     products: 0,
     testimonials: 0,
     inquiries: 0,
-    newInquiries: 0
+    newInquiries: 0,
+    heroSlides: 0
   });
 
   useEffect(() => {
     async function fetchStats() {
       // For now, we'll fetch them individually. In a real app, a single stats endpoint is better.
       try {
-        const [s, p, t, i] = await Promise.all([
+        const [s, p, t, i, h] = await Promise.all([
           fetch('/api/admin/services').then(r => r.json()),
           fetch('/api/admin/products').then(r => r.json()),
           fetch('/api/admin/testimonials').then(r => r.json()),
-          fetch('/api/admin/inquiries').then(r => r.json())
+          fetch('/api/admin/inquiries').then(r => r.json()),
+          fetch('/api/admin/hero').then(r => r.json())
         ]);
 
         setStats({
@@ -39,7 +42,8 @@ export default function AdminDashboard() {
           products: p.length || 0,
           testimonials: t.length || 0,
           inquiries: i.length || 0,
-          newInquiries: i.filter((x: any) => x.status === 'New').length || 0
+          newInquiries: i.filter((x: any) => x.status === 'New').length || 0,
+          heroSlides: h.length || 0
         });
       } catch (err) {
         console.error('Failed to fetch stats');
@@ -52,6 +56,7 @@ export default function AdminDashboard() {
     { label: 'Total Services', value: stats.services, icon: <Handshake className="text-brand-green" />, color: 'bg-brand-green/10', href: '/admin/services' },
     { label: 'Total Products', value: stats.products, icon: <Package className="text-blue-500" />, color: 'bg-blue-500/10', href: '/admin/products' },
     { label: 'Testimonials', value: stats.testimonials, icon: <MessageSquare className="text-purple-500" />, color: 'bg-purple-500/10', href: '/admin/testimonials' },
+    { label: 'Hero Slides', value: stats.heroSlides, icon: <Play className="text-orange-500" />, color: 'bg-orange-500/10', href: '/admin/hero' },
     { label: 'New Inquiries', value: stats.newInquiries, icon: <Inbox className="text-brand-yellow" />, color: 'bg-brand-yellow/10', href: '/admin/inquiries' },
   ];
 
@@ -107,6 +112,15 @@ export default function AdminDashboard() {
                  </div>
                  <ChevronRight size={18} className="text-slate-300 group-hover:translate-x-1 transition-transform" />
                </Link>
+               <Link href="/admin/hero" className="flex items-center justify-between p-6 rounded-2xl border border-slate-100 hover:border-brand-green/30 hover:bg-brand-green/5 transition-all group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 group-hover:bg-white transition-colors">
+                      <Play size={20} />
+                    </div>
+                    <span className="font-bold text-slate-700">Manage Hero Carousel</span>
+                  </div>
+                  <ChevronRight size={18} className="text-slate-300 group-hover:translate-x-1 transition-transform" />
+                </Link>
                <Link href="/admin/services" className="flex items-center justify-between p-6 rounded-2xl border border-slate-100 hover:border-brand-green/30 hover:bg-brand-green/5 transition-all group">
                  <div className="flex items-center gap-4">
                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 group-hover:bg-white transition-colors">

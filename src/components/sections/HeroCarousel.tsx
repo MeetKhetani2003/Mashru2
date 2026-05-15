@@ -29,16 +29,32 @@ const slides = [
 
 export default function HeroCarousel() {
   const [current, setCurrent] = useState(0);
+  const [heroSlides, setHeroSlides] = useState(slides);
+
+  useEffect(() => {
+    async function fetchHero() {
+      try {
+        const res = await fetch('/api/hero');
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setHeroSlides(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch hero slides:', err);
+      }
+    }
+    fetchHero();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
+      setCurrent((prev) => (prev + 1) % heroSlides.length);
     }, 8000);
     return () => clearInterval(timer);
-  }, []);
+  }, [heroSlides.length]);
 
-  const nextSlide = () => setCurrent((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+  const nextSlide = () => setCurrent((prev) => (prev + 1) % heroSlides.length);
+  const prevSlide = () => setCurrent((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
 
   return (
     <section className="relative h-screen min-h-[750px] w-full overflow-hidden bg-brand-dark">
@@ -49,20 +65,31 @@ export default function HeroCarousel() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.5 }}
-          className="absolute inset-0"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          onDragEnd={(_, info) => {
+            const swipeThreshold = 50;
+            if (info.offset.x < -swipeThreshold) {
+              nextSlide();
+            } else if (info.offset.x > swipeThreshold) {
+              prevSlide();
+            }
+          }}
+          className="absolute inset-0 cursor-grab active:cursor-grabbing"
         >
           {/* Background Layer */}
           <div className="absolute inset-0 z-0">
              <video
-              key={slides[current].video}
+              key={heroSlides[current].video}
               autoPlay
               muted
               loop
               playsInline
-              poster={slides[current].image}
+              poster={heroSlides[current].image}
               className="h-full w-full object-cover opacity-50"
             >
-              <source src={slides[current].video} type="video/mp4" />
+              <source src={heroSlides[current].video} type="video/mp4" />
             </video>
             <div className="absolute inset-0 bg-brand-dark/40 backdrop-blur-[1px]"></div>
           </div>
@@ -87,7 +114,7 @@ export default function HeroCarousel() {
                 transition={{ delay: 0.6, duration: 1 }}
                 className="text-5xl md:text-8xl font-serif font-semibold text-white leading-[1.1] mb-10 tracking-tight"
               >
-                {slides[current].title}
+                {heroSlides[current].title}
               </motion.h1>
 
               <motion.p
@@ -96,7 +123,7 @@ export default function HeroCarousel() {
                 transition={{ delay: 0.8, duration: 1 }}
                 className="text-lg md:text-2xl text-white/80 mb-14 max-w-3xl mx-auto leading-relaxed font-light font-sans"
               >
-                {slides[current].subtitle}
+                {heroSlides[current].subtitle}
               </motion.p>
 
               <motion.div
@@ -122,8 +149,8 @@ export default function HeroCarousel() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation Arrows - Higher Z-index */}
-      <div className="absolute inset-x-8 top-1/2 z-40 flex -translate-y-1/2 justify-between pointer-events-none">
+      {/* Navigation Arrows - Higher Z-index - Hidden on mobile */}
+      <div className="absolute inset-x-8 top-1/2 z-40 hidden md:flex -translate-y-1/2 justify-between pointer-events-none">
         <button 
           onClick={prevSlide}
           className="pointer-events-auto h-16 w-16 flex items-center justify-center rounded-full border border-white/10 bg-white/5 text-white backdrop-blur-md hover:bg-white/20 transition-all"
@@ -140,7 +167,7 @@ export default function HeroCarousel() {
 
       {/* Progress Indicators */}
       <div className="absolute bottom-12 left-1/2 z-40 flex -translate-x-1/2 gap-4">
-        {slides.map((_, i) => (
+        {heroSlides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}

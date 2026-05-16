@@ -19,6 +19,7 @@ export async function POST(req: Request) {
     const product = await Product.create(data);
     return NextResponse.json(product, { status: 201 });
   } catch (error: any) {
+    console.error('POST /api/admin/products error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -30,6 +31,7 @@ export async function PUT(req: Request) {
     const product = await Product.findByIdAndUpdate(id, data, { new: true });
     return NextResponse.json(product);
   } catch (error: any) {
+    console.error('PUT /api/admin/products error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

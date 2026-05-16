@@ -173,10 +173,20 @@ export default function ServicesAdmin() {
                  </div>
                </div>
 
-               <div className="space-y-2">
-                 <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Short Description</label>
-                 <textarea required className="w-full p-4 rounded-2xl border border-slate-200" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
-               </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Short Description</label>
+                  <textarea required className="w-full p-4 rounded-2xl border border-slate-200" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Long Description (Detailed)</label>
+                  <textarea required rows={4} className="w-full p-4 rounded-2xl border border-slate-200" value={formData.longDescription} onChange={e => setFormData({...formData, longDescription: e.target.value})} />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Icon Name (Lucide Icon)</label>
+                  <input required className="w-full p-4 rounded-2xl border border-slate-200" value={formData.iconName} onChange={e => setFormData({...formData, iconName: e.target.value})} placeholder="Handshake, Wheat, etc." />
+                </div>
 
                {/* Benefits */}
                <div className="space-y-4">

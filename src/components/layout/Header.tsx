@@ -27,6 +27,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const isAdminPage = pathname.startsWith('/admin');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,6 +43,8 @@ export default function Header() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [pathname]);
+
+  if (isAdminPage) return null;
 
   return (
     <>
@@ -184,13 +187,16 @@ export default function Header() {
               </nav>
 
               <div className="mt-auto">
-                <a
-                  href="tel:+919427740313"
-                  className="flex items-center gap-3 p-4 bg-brand-yellow text-brand-dark rounded-2xl font-bold shadow-lg"
+                <Link
+                  href="/contact"
+                  className="flex items-center justify-between p-4 bg-brand-green text-white rounded-2xl font-bold shadow-lg group hover:bg-brand-green-light transition-all"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Phone size={20} />
-                  <span>+91 94277 40313</span>
-                </a>
+                  <span className="text-lg uppercase tracking-wider">Contact Us</span>
+                  <div className="bg-white/20 p-2 rounded-xl">
+                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-all" />
+                  </div>
+                </Link>
               </div>
             </motion.div>
           </motion.div>

@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export default function CustomCursor() {
+  const pathname = usePathname();
+  const isAdminPage = pathname.startsWith('/admin');
+  
+  if (isAdminPage) return null;
+
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   

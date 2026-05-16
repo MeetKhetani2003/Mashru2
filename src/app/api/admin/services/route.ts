@@ -19,6 +19,7 @@ export async function POST(req: Request) {
     const service = await Service.create(data);
     return NextResponse.json(service, { status: 201 });
   } catch (error: any) {
+    console.error('POST /api/admin/services error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -30,6 +31,7 @@ export async function PUT(req: Request) {
     const service = await Service.findByIdAndUpdate(id, data, { new: true });
     return NextResponse.json(service);
   } catch (error: any) {
+    console.error('PUT /api/admin/services error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -42,6 +44,7 @@ export async function DELETE(req: Request) {
     await Service.findByIdAndDelete(id);
     return NextResponse.json({ success: true });
   } catch (error: any) {
+    console.error('DELETE /api/admin/services error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

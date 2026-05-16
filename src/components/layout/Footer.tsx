@@ -1,10 +1,16 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Wheat, Mail, Phone, MapPin, ArrowUpRight, Globe, Share2, ArrowRight } from 'lucide-react';
 import Magnetic from '../animations/Magnetic';
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isAdminPage = pathname.startsWith('/admin');
   const currentYear = new Date().getFullYear();
   
+  if (isAdminPage) return null;
   return (
     <footer className="bg-brand-dark text-white pt-24 pb-12 overflow-hidden relative">
       {/* Cinematic Background Decoration */}
